@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\usercontroller; 
+use App\Http\Controllers\ExcelController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -14,4 +15,10 @@ use App\Http\Controllers\usercontroller;
 |
 */
 
-Route::get('/open', [usercontroller::class, 'open'])->name('open');
+Route::get('/', [usercontroller::class, 'open'])->name('open');
+Route::post('/ceklogin', [usercontroller::class, 'ceklogin'])->name('ceklogin');
+
+Route::get('/Excel/index', [ExcelController::class, 'index'])->name('index');
+Route::post('/Excel/store', [ExcelController::class, 'store'])->name('store');
+Route::get('/Excel/tables', [ExcelController::class, 'listTables'])->name('listTables');
+Route::get('/Excel/tables/{tableName}', [ExcelController::class, 'showTable'])->name('showTable');
