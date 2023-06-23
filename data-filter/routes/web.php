@@ -24,4 +24,4 @@ Route::get('/Excel/tables', [ExcelController::class, 'listTables'])->name('listT
 Route::get('/Excel/tables/{tableName}', [ExcelController::class, 'showTable'])->name('showTable');
 
 // controller admin
-Route::get('/admin/dashboard', [AdminController::class, 'Dashboard']);
+Route::get('/admin/dashboard', [AdminController::class, 'Dashboard'])->name('Dashboard');
