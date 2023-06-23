@@ -22,16 +22,22 @@ class ExcelController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $file = $request->file('excel_file');
+{
+    $files = $request->file('excel_files');
+    $tableName = $request->input('table_name');
+    $referenceColumn = $request->input('reference_column');
 
-        // Validasi file Excel
-        $request->validate([
-            'excel_file' => 'required|mimes:xls,xlsx'
-        ]);
+    // Validasi file Excel
+    $validatedData = $request->validate([
+        'excel_files' => 'required|array',
+        'excel_files.*' => 'required|mimes:xls,xlsx',
+        'table_name' => 'required',
+        'reference_column' => 'required',
+    ]);
 
+    foreach ($files as $file) {
         // Membaca file Excel
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
+        $spreadsheet = IOFactory::load($file);
         $sheetNames = $spreadsheet->getSheetNames();
 
         // Iterasi melalui setiap sheet
@@ -44,42 +50,49 @@ class ExcelController extends Controller
             $cellIterator->setIterateOnlyExistingCells(true); // Menghindari sel yang kosong
             foreach ($cellIterator as $cell) {
                 $columnNames[] = $cell->getValue();
-    }
-
-
-        // Menentukan nama tabel berdasarkan inputan dari user dengan tambahan angka urutan
-        $tableName = $request->input('table_name') . '_' . ($index + 1);
-
-
-        // Membuat tabel baru berdasarkan nama tabel yang ditentukan
-        Schema::create($tableName, function ($table) use ($columnNames) {
-            foreach ($columnNames as $columnName) {
-                $table->string($columnName)->nullable();
-            }
-        });
-
-        // Insert data into the newly created table
-        $rows = $sheet->toArray();
-        $insertData = [];
-        foreach ($rows as $rowIndex => $row) {
-            if ($rowIndex === 0) {
-                // Skip the first row (column names)
-                continue;
             }
 
-            $rowData = [];
-            foreach ($columnNames as $columnIndex => $columnName) {
-                // Pastikan data yang akan dimasukkan ke kolom sesuai dengan struktur tabel
-                $rowData[$columnName] = $row[$columnIndex] ?? null;
+            // Menentukan nama tabel berdasarkan sheet name dengan tambahan angka urutan
+            $newTableName = $tableName . '_' . ($index + 1);
+
+            // Periksa apakah tabel dengan nama yang sama sudah ada
+            if (Schema::hasTable($newTableName)) {
+                // Tabel sudah ada, lakukan proses penggabungan atau beri nama tabel yang berbeda
+                // Misalnya, tambahkan angka unik atau lainnya untuk nama tabel baru
+                $newTableName = $tableName . '_' . uniqid();
             }
-            $insertData[] = $rowData;
+
+            // Membuat tabel baru berdasarkan nama tabel yang ditentukan
+            Schema::create($newTableName, function ($table) use ($columnNames) {
+                foreach ($columnNames as $columnName) {
+                    $table->string($columnName)->nullable();
+                }
+            });
+
+            // Insert data into the newly created table
+            $rows = $sheet->toArray();
+            $insertData = [];
+            foreach ($rows as $rowIndex => $row) {
+                if ($rowIndex === 0) {
+                    // Skip the first row (column names)
+                    continue;
+                }
+
+                $rowData = [];
+                foreach ($columnNames as $columnIndex => $columnName) {
+                    // Pastikan data yang akan dimasukkan ke kolom sesuai dengan struktur tabel
+                    $rowData[$columnName] = $row[$columnIndex] ?? null;
+                }
+                $insertData[] = $rowData;
+            }
+
+            DB::table($newTableName)->insert($insertData);
         }
-
-        DB::table($tableName)->insert($insertData);
     }
 
     return redirect()->back()->with('success', 'File Excel berhasil diunggah dan disimpan.');
 }
+
 
 
     public function listTables()
