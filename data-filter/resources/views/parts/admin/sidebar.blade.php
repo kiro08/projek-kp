@@ -14,4 +14,20 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+            <li class="nav-item active">
+                <a class="nav-link" href="/admin/dashboard">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Input Data</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/admin/dashboard">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Export Data</span></a>
+            </li>
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
         </ul>

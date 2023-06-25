@@ -76,7 +76,7 @@
         <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                Pilih Data
+                Data yang ada di database
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">Data 1</a>
@@ -90,11 +90,7 @@
             <!-- Data will be dynamically loaded here based on user selection -->
         </div>
     </div>
-</div>
-
-        </div>
-    </div>
-                   
+</div>           
 
 
 @endsection
