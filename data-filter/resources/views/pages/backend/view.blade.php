@@ -21,7 +21,10 @@
                         <div class="col-md-8 text-md-right">
                         <button class="btn btn-primary mr-2">Import Excel</button>
                         <button class="btn btn-primary mr-2">Export Excel</button>
-                        <button class="btn btn-primary">Edit</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">
+                        Edit
+                        </button>
+                        
                         </div>
                     </div>
                 </div>
@@ -90,6 +93,48 @@
                     </nav>
                 </div>
             </section>
+            <section>
+                <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Edit Data</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Pilihan kolom -->
+                                <div class="form-group">
+                                    <label for="columnSelect">Pilih Kolom</label>
+                                    <select class="form-control" id="columnSelect">
+                                        <option value="column1">Kolom 1</option>
+                                        <option value="column2">Kolom 2</option>
+                                        <option value="column3">Kolom 3</option>
+                                        <!-- Tambahkan opsi lainnya sesuai dengan jumlah kolom yang ingin ditampilkan -->
+                                    </select>
+                                </div>
+                                <!-- Form untuk kata-kata/kolom yang ingin diubah -->
+                                <div class="form-group">
+                                    <label for="changeInput">Kata-kata/Kolom yang ingin diubah</label>
+                                    <input type="text" class="form-control" id="changeInput">
+                                </div>
+
+                                <!-- Form untuk mengisi kata-katanya ingin dirubah menjadi apa -->
+                                <div class="form-group">
+                                    <label for="newValueInput">Kata-kata yang ingin dirubah menjadi</label>
+                                    <input type="text" class="form-control" id="newValueInput">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+                            <!-- End Modal -->
         </div>
     </div>
 </div>
