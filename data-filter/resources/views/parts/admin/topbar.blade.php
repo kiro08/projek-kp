@@ -6,11 +6,13 @@
                     </button>
 
                     <section>
-                        <section class="live-clock">
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
-                                        <div id="clock"></div>
+                                        <div class="live-clock d-flex align-items-center">
+                                            <div id="clock"></div>
+                                            <i class="fas fa-clock ml-2"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
