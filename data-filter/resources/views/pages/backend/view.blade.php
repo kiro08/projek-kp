@@ -19,9 +19,10 @@
                             </div>
                         </div>
                         <div class="col-md-8 text-md-right">
-                        <button class="btn btn-primary mr-2">Import Excel</button>
-                        <button class="btn btn-primary mr-2">Export Excel</button>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">
+                        <button class="btn btn-success mr-2">
+                            <i class="fas fa-file-excel"></i>
+                            Export Excel</button>
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal">
                         Edit
                         </button>
                         

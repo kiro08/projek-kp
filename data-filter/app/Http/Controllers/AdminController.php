@@ -17,7 +17,7 @@ class AdminController extends Controller
         $database = env('DB_DATABASE', 'bri');
         $tables = DB::select("SHOW TABLES FROM `$database`");
 
-        $hiddenTables = ['failed_jobs', 'migrations','personal_access_tokens','password_reset_tokens','users    ']; // Tabel-tabel yang ingin disembunyikan
+        $hiddenTables = ['failed_jobs', 'migrations','personal_access_tokens','password_reset_tokens','users']; // Tabel-tabel yang ingin disembunyikan
 
         // Filter tabel-tabel yang ingin ditampilkan
         $filteredTables = array_filter($tables, function ($table) use ($hiddenTables, $database) {
