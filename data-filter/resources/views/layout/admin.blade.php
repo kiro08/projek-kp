@@ -87,24 +87,24 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="{{url('asset/back-end/vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{url('asset/back-end/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{url('asset/backend/vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url('asset/backend/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="{{url('asset/back-end/vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+    <script src="{{url('asset/backend/vendor/jquery-easing/jquery.easing.min.js')}}"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="{{url('asset/back-end/js/sb-admin-2.min.js')}}"></script>
+    <script src="{{url('asset/backend/js/sb-admin-2.min.js')}}"></script>
 
     <!-- Page level plugins -->
-    <script src="{{url('asset/back-end/vendor/datatables/jquery.dataTables.min.js')}}"></script>
-    <script src="{{url('asset/back-end/vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
-    <script src="{{url ('asset/back-end/vendor/chart.js/Chart.min.js')}}"></script>
+    <script src="{{url('asset/backend/vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{url('asset/backend/vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{url ('asset/backend/vendor/chart.js/Chart.min.js')}}"></script>
 
     <!-- Page level custom scripts -->
-    <script src="{{url('asset/back-end/js/demo/datatables-demo.js')}}"></script>
-    <script src="{{url ('asset/back-end/js/demo/chart-area-demo.js')}}"></script>
-    <script src="{{url ('asset/back-end/js/demo/chart-pie-demo.js')}}"></script>
+    <script src="{{url('asset/backend/js/demo/datatables-demo.js')}}"></script>
+    <script src="{{url ('asset/backend/js/demo/chart-area-demo.js')}}"></script>
+    <script src="{{url ('asset/backend/js/demo/chart-pie-demo.js')}}"></script>
 
     
 

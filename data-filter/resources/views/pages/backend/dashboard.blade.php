@@ -53,7 +53,7 @@
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Data Manajemen</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Data dalam database </h6>
                 <div class="dropdown no-arrow">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,25 +71,32 @@
             </div>
             <!-- Card Body -->
             <div class="card-body">
-    <div class="chart-area">
-        <!-- Dropdown Menu -->
-        <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Data yang ada di database
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Data 1</a>
-                <a class="dropdown-item" href="#">Data 2</a>
-                <a class="dropdown-item" href="#">Data 3</a>
+            <h2>Daftar Nama Tabel</h2>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nama Tabel</th>
+                    <th class="text-right">Aksi</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach ($filteredTables as $table)
+                <tr>
+                    <td>{{ $table->{'Tables_in_' . $database} }}</td>
+                    <td class="text-right">
+                    <a href="/admin/view/{{ $table->{'Tables_in_' . $database} }}" class="btn btn-primary">View</a>
+                    <form action="#" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus tabel ini?')">Delete</button>
+                    </form>
+                    </td>
+                </tr>
+                @endforeach
+                </tbody>
+            </table>
             </div>
-        </div>
 
-        <!-- Placeholder for displaying data -->
-        <div id="dataDisplay">
-            <!-- Data will be dynamically loaded here based on user selection -->
-        </div>
-    </div>
 </div>           
 
 

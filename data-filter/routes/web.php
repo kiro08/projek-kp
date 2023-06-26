@@ -18,10 +18,11 @@ use App\Http\Controllers\AdminController;
 Route::get('/', [usercontroller::class, 'open'])->name('open');
 Route::post('/ceklogin', [usercontroller::class, 'ceklogin'])->name('ceklogin');
 
-Route::get('/Excel/index', [ExcelController::class, 'index'])->name('index');
+//Excel Controller
 Route::post('/Excel/store', [ExcelController::class, 'store'])->name('store');
-Route::get('/Excel/tables', [ExcelController::class, 'listTables'])->name('listTables');
-Route::get('/Excel/tables/{tableName}', [ExcelController::class, 'showTable'])->name('showTable');
 
-// controller admin
-Route::get('/admin/dashboard', [AdminController::class, 'Dashboard']);
+
+//Admin Controller
+Route::get('/admin/dashboard', [AdminController::class, 'Dashboard'])->name('dashboard');
+Route::get('/admin/view/{tablename}', [AdminController::class, 'view'])->name('view');
+Route::get('/admin/index', [AdminController::class, 'index'])->name('index');
