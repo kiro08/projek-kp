@@ -12,11 +12,22 @@
             <section>
                 <div class="container mt-4">
                     <div class="row">
-                    <div class="input-group col md-4">
-                        <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="search-btn">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button" id="search-btn">Search</button>
-                        </div>
+                    <div class="input-group col-md-4">
+                    <!-- Form Pencarian -->
+                        <form action="{{ route('search', ['tableName' => $tableName]) }}" method="GET">
+                            @csrf
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="keyword" placeholder="Search for..." aria-label="Search" aria-describedby="search-btn">
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" name="searchColumn">
+                                    @foreach ($columns as $column)
+                                        <option value="{{ $column }}">{{ $column }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" type="submit" id="search-btn">Search</button>
+                        </form>
                     </div>
                         <div class="col-md-8 text-md-right">
                         <button class="btn btn-success mr-2">
@@ -39,24 +50,33 @@
                     <table class="table table-striped">
                         <!--Table head-->
                         <thead>
-                            <tr>
-                                @foreach($tableData[0] as $column => $value)
-                                    <th>{{ $column }}</th>
-                                @endforeach
-                            </tr>
+                            @if (!$tableData->isEmpty() && isset($tableData[0]))
+                                <tr>
+                                    @foreach($tableData[0] as $column => $value)
+                                        <th>{{ $column }}</th>
+                                    @endforeach
+                                </tr>
+                            @endif
                         </thead>
                         <!--Table head-->
 
                         <!--Table body-->
                         <tbody>
-                             @foreach ($tableData as $row)
+                            @if ($tableData->isEmpty())
                                 <tr>
-                                    @foreach($row as $column => $value)
-                                        <td>{{ $value }}</td>
-                                    @endforeach
+                                    <td colspan="{{ count($columns) }}">Tidak ada data yang sesuai dengan pencarian Anda.</td>
                                 </tr>
-                            @endforeach
+                            @else
+                                @foreach ($tableData as $row)
+                                    <tr>
+                                        @foreach($row as $column => $value)
+                                            <td>{{ $value }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
+
                         <!--Table body-->
                     </table><br>
                     <!--Table-->
@@ -109,7 +129,6 @@
                                 <form action="{{ route('update', $tableName) }}" method="POST">
                                     @csrf
                                     @method('PUT')
-
                                     <!-- Pilihan kolom -->
                                     <div class="form-group">
                                         <label for="columnSelect">Pilih Kolom</label>
@@ -132,9 +151,8 @@
                                         <input type="text" class="form-control" id="newValueInput" name="newValueInput">
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                    <button type="submit" class="btn btn-primary" name="edit">Simpan Perubahan</button>
                                 </form>
-
                         </div>
                     </div>
                 </div>

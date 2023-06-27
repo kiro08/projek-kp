@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Arr;
 use DataTables;
 
 
@@ -33,45 +34,80 @@ class AdminController extends Controller
         return view('pages.backend.index');
     }
 
-    public function view($tableName)
-    {
-        $database = env('DB_DATABASE', 'bri');
-    
-        // Mendapatkan data dari tabel yang dipilih
-        $tableData = DB::table($tableName)->paginate(100);
-    
-        // Mendapatkan daftar kolom dari tabel yang dipilih
-        $columns = DB::getSchemaBuilder()->getColumnListing($tableName);
-    
-        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns'));
-    }
     
     public function update(Request $request, $tableName)
     {
-        $columnName = $request->input('columnSelect');
-        $searchKeyword = $request->input('changeInput');
-        $newValue = $request->input('newValueInput');
-
-        // Mengganti nilai pada kolom yang dipilih yang mengandung kata-kata tertentu
-        DB::table($tableName)
-            ->where($columnName, 'LIKE', "%{$searchKeyword}%")
-            ->update([$columnName => DB::raw("REPLACE($columnName, '{$searchKeyword}', '{$newValue}')")]);
-
-        return redirect()->back()->with('success', 'Kolom berhasil diubah dan nilai diupdate.');
+        // ...
+        
+        if ($request->has('edit')) {
+            $columnName = $request->input('columnSelect');
+            $searchKeyword = $request->input('changeInput');
+            $newValue = $request->input('newValueInput');
+            
+            // Mengganti nilai pada kolom yang dipilih yang mengandung kata-kata tertentu
+            DB::table($tableName)
+                ->where($columnName, 'LIKE', "%{$searchKeyword}%")
+                ->update([$columnName => DB::raw("REPLACE($columnName, '{$searchKeyword}', '{$newValue}')")]);
+        
+            return redirect()->back()->with('success', 'Kolom berhasil diubah dan nilai diperbarui.');
+        }
+        
+        // ...
     }
+
+    public function view($tableName)
+    {
+        $database = env('DB_DATABASE', 'bri');
+
+        // Periksa apakah tabel ada dalam database
+        if (!Schema::hasTable($tableName)) {
+            // Tampilkan pesan bahwa tabel tidak ada
+            $errorMessage = "Tabel $tableName tidak ditemukan.";
+            return redirect()->back()->with('error', $errorMessage);
+        }
+
+        // Dapatkan daftar kolom dari tabel
+        $columns = Schema::getColumnListing($tableName);
+
+        $tableData = DB::table($tableName)->paginate(100);
+
+        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns'));
+    }
+
     public function search(Request $request, $tableName)
     {
         $database = env('DB_DATABASE', 'bri');
         $keyword = $request->input('keyword');
-        $searchColumn = $request->input('searchColumn');
+        $searchColumn = $request->input('searchColumn', []);
 
-        // Mendapatkan data dari tabel yang dipilih berdasarkan kolom pencarian
-        $tableData = DB::table($tableName)
-            ->where($searchColumn, 'LIKE', "%{$keyword}%")
-            ->paginate(100);
+        // Periksa apakah tabel ada dalam database
+        if (!Schema::hasTable($tableName)) {
+            // Tampilkan pesan bahwa tabel tidak ada
+            $errorMessage = "Tabel $tableName tidak ditemukan.";
+            return redirect()->back()->with('error', $errorMessage);
+        }
 
-        return view('pages.backend.view', compact('tableName', 'tableData', 'database'));
+        // Dapatkan daftar kolom dari tabel
+        $columns = Schema::getColumnListing($tableName);
+
+        $tableData = DB::table($tableName);
+
+        if (!empty($keyword) && !empty($searchColumn)) {
+            // Cari data berdasarkan kolom pencarian jika keyword dan kolom pencarian tidak kosong
+            $tableData->where(function ($query) use ($searchColumn, $keyword) {
+                foreach (Arr::wrap($searchColumn) as $column) {
+                    $query->orWhere($column, 'LIKE', "%{$keyword}%");
+                }
+            });
+        }
+
+        $tableData = $tableData->paginate(100);
+
+        $tableData->appends(['keyword' => $keyword, 'searchColumn' => $searchColumn]);
+
+        $isEmpty = $tableData->isEmpty();
+
+        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns'));
     }
-
 
 }
