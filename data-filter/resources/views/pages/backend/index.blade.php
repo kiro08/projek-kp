@@ -23,10 +23,6 @@
                 <label for="table_name" class="form-label">Nama Tabel</label>
                 <input type="text" class="form-control" id="table_name" name="table_name" required>
             </div>
-            <div class="mb-3">
-                <label for="reference_column" class="form-label">Kolom Acuan</label>
-                <input type="text" class="form-control" id="reference_column" name="reference_column" required>
-            </div>
             <button type="submit" class="btn btn-primary">Unggah</button>
         </form>
     <br>

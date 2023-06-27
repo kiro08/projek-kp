@@ -12,12 +12,12 @@
             <section>
                 <div class="container mt-4">
                     <div class="row">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control bg-light border-2 small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append"> 
-                            </div>
+                    <div class="input-group col md-4">
+                        <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="search-btn">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" id="search-btn">Search</button>
                         </div>
+                    </div>
                         <div class="col-md-8 text-md-right">
                         <button class="btn btn-success mr-2">
                             <i class="fas fa-file-excel"></i>
@@ -106,31 +106,35 @@
                             </div>
                             <div class="modal-body">
                                 <!-- Pilihan kolom -->
-                                <div class="form-group">
-                                    <label for="columnSelect">Pilih Kolom</label>
-                                    <select class="form-control" id="columnSelect">
-                                        <option value="column1">Kolom 1</option>
-                                        <option value="column2">Kolom 2</option>
-                                        <option value="column3">Kolom 3</option>
-                                        <!-- Tambahkan opsi lainnya sesuai dengan jumlah kolom yang ingin ditampilkan -->
-                                    </select>
-                                </div>
-                                <!-- Form untuk kata-kata/kolom yang ingin diubah -->
-                                <div class="form-group">
-                                    <label for="changeInput">Kata-kata/Kolom yang ingin diubah</label>
-                                    <input type="text" class="form-control" id="changeInput">
-                                </div>
+                                <form action="{{ route('update', $tableName) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
 
-                                <!-- Form untuk mengisi kata-katanya ingin dirubah menjadi apa -->
-                                <div class="form-group">
-                                    <label for="newValueInput">Kata-kata yang ingin dirubah menjadi</label>
-                                    <input type="text" class="form-control" id="newValueInput">
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
+                                    <!-- Pilihan kolom -->
+                                    <div class="form-group">
+                                        <label for="columnSelect">Pilih Kolom</label>
+                                        <select class="form-control" id="columnSelect" name="columnSelect">
+                                            @foreach ($columns as $column)
+                                                <option value="{{ $column }}">{{ $column }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Form untuk kata-kata/kolom yang ingin diubah -->
+                                    <div class="form-group">
+                                        <label for="changeInput">Kata-kata/Kolom yang ingin diubah</label>
+                                        <input type="text" class="form-control" id="changeInput" name="changeInput">
+                                    </div>
+
+                                    <!-- Form untuk mengisi kata-katanya ingin dirubah menjadi apa -->
+                                    <div class="form-group">
+                                        <label for="newValueInput">Kata-kata yang ingin dirubah menjadi</label>
+                                        <input type="text" class="form-control" id="newValueInput" name="newValueInput">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                </form>
+
                         </div>
                     </div>
                 </div>

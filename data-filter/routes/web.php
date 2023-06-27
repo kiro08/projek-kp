@@ -21,13 +21,8 @@ Route::post('/ceklogin', [usercontroller::class, 'ceklogin'])->name('ceklogin');
 //Excel Controller
 Route::post('/Excel/store', [ExcelController::class, 'store'])->name('store');
 
-<<<<<<< HEAD
-// controller admin
-Route::get('/admin/dashboard', [AdminController::class, 'Dashboard'])->name('Dashboard');
-=======
-
 //Admin Controller
 Route::get('/admin/dashboard', [AdminController::class, 'Dashboard'])->name('dashboard');
 Route::get('/admin/view/{tablename}', [AdminController::class, 'view'])->name('view');
 Route::get('/admin/index', [AdminController::class, 'index'])->name('index');
->>>>>>> bfed1cffbeac4692372e5b5de9c2eb8b1a337ea3
+Route::put('/admin/view/{tablename}', [AdminController::class, 'update'])->name('update');

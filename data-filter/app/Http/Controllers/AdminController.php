@@ -36,10 +36,42 @@ class AdminController extends Controller
     public function view($tableName)
     {
         $database = env('DB_DATABASE', 'bri');
-
+    
         // Mendapatkan data dari tabel yang dipilih
-        $tableData = DB::table($tableName)->paginate(100);;
+        $tableData = DB::table($tableName)->paginate(100);
+    
+        // Mendapatkan daftar kolom dari tabel yang dipilih
+        $columns = DB::getSchemaBuilder()->getColumnListing($tableName);
+    
+        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns'));
+    }
+    
+    public function update(Request $request, $tableName)
+    {
+        $columnName = $request->input('columnSelect');
+        $searchKeyword = $request->input('changeInput');
+        $newValue = $request->input('newValueInput');
+
+        // Mengganti nilai pada kolom yang dipilih yang mengandung kata-kata tertentu
+        DB::table($tableName)
+            ->where($columnName, 'LIKE', "%{$searchKeyword}%")
+            ->update([$columnName => DB::raw("REPLACE($columnName, '{$searchKeyword}', '{$newValue}')")]);
+
+        return redirect()->back()->with('success', 'Kolom berhasil diubah dan nilai diupdate.');
+    }
+    public function search(Request $request, $tableName)
+    {
+        $database = env('DB_DATABASE', 'bri');
+        $keyword = $request->input('keyword');
+        $searchColumn = $request->input('searchColumn');
+
+        // Mendapatkan data dari tabel yang dipilih berdasarkan kolom pencarian
+        $tableData = DB::table($tableName)
+            ->where($searchColumn, 'LIKE', "%{$keyword}%")
+            ->paginate(100);
 
         return view('pages.backend.view', compact('tableName', 'tableData', 'database'));
     }
+
+
 }
