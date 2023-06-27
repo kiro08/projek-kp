@@ -5,18 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Hash; 
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ExcelImport;
 use App\Imports\ExcelExport;
 use DataTables;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class ExcelController extends Controller
 {
-
     public function store(Request $request)
     {
         $files = $request->file('excel_files');
@@ -87,5 +89,66 @@ class ExcelController extends Controller
         return redirect()->back()->with('success', 'File Excel berhasil diunggah dan disimpan.');
     }
 
-    
+
+    public function exportExcel($tableName, Request $request)
+    {
+        // Periksa apakah tabel ada dalam database
+        if (!Schema::hasTable($tableName)) {
+            // Tampilkan pesan bahwa tabel tidak ada
+            $errorMessage = "Tabel $tableName tidak ditemukan.";
+            return redirect()->back()->with('error', $errorMessage);
+        }
+
+        // Dapatkan daftar kolom dari tabel
+        $columns = Schema::getColumnListing($tableName);
+
+        // Buat objek Spreadsheet baru
+        $spreadsheet = new Spreadsheet();
+
+        // Set pengaturan awal untuk lembar kerja
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle($tableName);
+
+        // Tambahkan header kolom
+        $columnIndex = 1;
+        foreach ($columns as $column) {
+            $sheet->setCellValueByColumnAndRow($columnIndex, 1, $column);
+            $columnIndex++;
+        }
+
+        // Ambil data berdasarkan kata kunci pencarian dan kolom yang dipilih
+        $searchKeyword = $request->input('keyword');
+        $selectedColumn = $request->input('column');
+
+        $query = DB::table($tableName);
+
+        if (!empty($searchKeyword) && !empty($selectedColumn)) {
+            $query->where($selectedColumn, 'LIKE', '%' . $searchKeyword . '%');
+        }
+
+        $tableData = $query->get();
+
+        // Tambahkan data baris
+        $rowIndex = 2;
+        foreach ($tableData as $row) {
+            $columnIndex = 1;
+            foreach ($columns as $column) {
+                $sheet->setCellValueByColumnAndRow($columnIndex, $rowIndex, $row->$column);
+                $columnIndex++;
+            }
+            $rowIndex++;
+        }
+
+        // Konfigurasi file Excel
+        $filename = $tableName . '_' . date('YmdHis') . '.xlsx';
+        $filepath = 'D:\Folder Kuliah\Semester 6\KPPM\\' . $filename;
+
+        // Simpan file Excel
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filepath);
+
+        // Mengirim file sebagai respons
+        return response()->download($filepath, $filename)->deleteFileAfterSend();
+    }
+
 }

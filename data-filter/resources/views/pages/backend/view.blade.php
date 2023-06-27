@@ -30,9 +30,21 @@
                         </form>
                     </div>
                         <div class="col-md-8 text-md-right">
-                        <button class="btn btn-success mr-2">
-                            <i class="fas fa-file-excel"></i>
-                            Export Excel</button>
+                        <form action="{{ route('export', ['tableName' => $tableName]) }}" method="GET" style="display: inline;">
+                            <input type="text" name="keyword" placeholder="Keyword" value="{{ request('keyword') }}">
+
+                            <select name="column">
+                                <option value="">Pilih Kolom</option>
+                                @foreach ($columns as $column)
+                                    <option value="{{ $column }}">{{ $column }}</option>
+                                @endforeach
+                            </select>
+
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </button>
+                        </form>
+
                         <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal">
                         Edit
                         </button>
