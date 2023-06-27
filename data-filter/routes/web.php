@@ -20,6 +20,7 @@ Route::post('/ceklogin', [usercontroller::class, 'ceklogin'])->name('ceklogin');
 
 //Excel Controller
 Route::post('/Excel/store', [ExcelController::class, 'store'])->name('store');
+Route::get('/admin/export/{tableName}', [ExcelController::class, 'exportExcel'])->name('export');
 
 //Admin Controller
 Route::get('/admin/dashboard', [AdminController::class, 'Dashboard'])->name('dashboard');

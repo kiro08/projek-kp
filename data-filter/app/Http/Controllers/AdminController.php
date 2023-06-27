@@ -55,7 +55,7 @@ class AdminController extends Controller
         // ...
     }
 
-    public function view($tableName)
+    public function view($tableName, Request $request)
     {
         $database = env('DB_DATABASE', 'bri');
 
@@ -69,9 +69,20 @@ class AdminController extends Controller
         // Dapatkan daftar kolom dari tabel
         $columns = Schema::getColumnListing($tableName);
 
-        $tableData = DB::table($tableName)->paginate(100);
+        // Ambil data dari tabel berdasarkan keyword pencarian
+        $query = DB::table($tableName);
 
-        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns'));
+        $keyword = $request->input('keyword');
+
+        if (!empty($keyword)) {
+            foreach ($columns as $column) {
+                $query->orWhere($column, 'LIKE', '%' . $keyword . '%');
+            }
+        }
+
+        $tableData = $query->paginate(100);
+
+        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns', 'keyword'));
     }
 
     public function search(Request $request, $tableName)
