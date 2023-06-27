@@ -21,8 +21,11 @@ Route::post('/ceklogin', [usercontroller::class, 'ceklogin'])->name('ceklogin');
 //Excel Controller
 Route::post('/Excel/store', [ExcelController::class, 'store'])->name('store');
 
-
 //Admin Controller
 Route::get('/admin/dashboard', [AdminController::class, 'Dashboard'])->name('dashboard');
 Route::get('/admin/view/{tablename}', [AdminController::class, 'view'])->name('view');
 Route::get('/admin/index', [AdminController::class, 'index'])->name('index');
+Route::put('/admin/view/{tablename}', [AdminController::class, 'update'])->name('update');
+Route::post('/admin/search/{tablename}', [AdminController::class, 'search'])->name('search');
+Route::get('/admin/search/{tableName}', [AdminController::class, 'search'])->name('search');
+

@@ -21,14 +21,12 @@ class ExcelController extends Controller
     {
         $files = $request->file('excel_files');
         $tableName = $request->input('table_name');
-        $referenceColumn = $request->input('reference_column');
 
         // Validasi file Excel
         $validatedData = $request->validate([
             'excel_files' => 'required|array',
             'excel_files.*' => 'required|mimes:xls,xlsx',
             'table_name' => 'required',
-            'reference_column' => 'required',
         ]);
 
         foreach ($files as $file) {
@@ -88,4 +86,6 @@ class ExcelController extends Controller
 
         return redirect()->back()->with('success', 'File Excel berhasil diunggah dan disimpan.');
     }
+
+    
 }
