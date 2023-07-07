@@ -42,6 +42,12 @@ class ExcelController extends Controller
             foreach ($sheetNames as $index => $sheetName) {
                 $sheet = $spreadsheet->getSheetByName($sheetName);
 
+                // Cek apakah sheet kosong
+                if ($sheet->getCell('A1')->getValue() === null) {
+                    // Sheet kosong, lanjut ke sheet berikutnya
+                    continue;
+                }
+
                 // Mengambil nama kolom dari sheet
                 $columnNames = [];
                 $cellIterator = $sheet->getRowIterator(1)->current()->getCellIterator();
@@ -90,6 +96,7 @@ class ExcelController extends Controller
 
         return redirect()->back()->with('success', 'File Excel berhasil diunggah dan disimpan.');
     }
+
 
 
     public function exportExcel($tableName, Request $request)
