@@ -5,7 +5,7 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <head>
-                <h1>Data Tabel {{ $tableName }}</h1>
+                <h1>Data Table : {{ $tableName }}</h1>
                 <br>
             </head>
             
@@ -30,26 +30,33 @@
                         </form>
                     </div>
                         <div class="col-md-8 text-md-right">
-                        <form action="{{ route('export', ['tableName' => $tableName]) }}" method="GET" style="display: inline;">
-                            <input type="text" name="keyword" placeholder="Keyword" value="{{ request('keyword') }}">
-
-                            <select name="column">
-                                <option value="">Pilih Kolom</option>
-                                @foreach ($columns as $column)
-                                    <option value="{{ $column }}">{{ $column }}</option>
-                                @endforeach
-                            </select>
-
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-file-excel"></i> Export Excel
-                            </button>
+                        <form action="{{ route('export', ['tableName' => $tableName]) }}" method="GET">
+                            <div class="form-row align-items-center justify-content-end">
+                                <div class="col-3">
+                                    <input type="text" name="keyword" class="form-control mb-2" placeholder="Keyword" value="{{ request('keyword') }}">
+                                </div>
+                                <div class="col-3">
+                                    <select name="column" class="custom-select mb-2">
+                                        <option value="">Choose column</option>
+                                        @foreach ($columns as $column)
+                                            <option value="{{ $column }}">{{ $column }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div><br>
+                            <div class="form-row">
+                                <div class="col d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-success" onclick="exportData()">
+                                        <i class="fas fa-file-excel"></i> Export Excel
+                                    </button>
+                                    <button type="button" class="btn btn-warning ml-2" data-toggle="modal" data-target="#editModal">
+                                        Edit
+                                    </button>
+                                </div>
+                            </div>
                         </form>
+                    </div>
 
-                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal">
-                        Edit
-                        </button>
-                        
-                        </div>
                     </div>
                 </div>
                 
@@ -168,6 +175,13 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    function exportData() {
+                        // Redirect ke URL eksport dengan query parameter
+                        window.location.href = "/export?tableName=" + encodeURIComponent("{{ $tableName }}");
+                    }
+                </script>
+
             </section>
                             <!-- End Modal -->
         </div>

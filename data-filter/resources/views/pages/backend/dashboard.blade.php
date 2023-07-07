@@ -18,7 +18,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Data Terinput</div>
+                                Data Amount</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
                         </div>
                         <div class="col-auto">
@@ -36,7 +36,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Jumlah Barang Masuk</div>
+                                Number of Table</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
                         </div>
                         <div class="col-auto">
@@ -53,7 +53,7 @@
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Data dalam database </h6>
+                <h6 class="m-0 font-weight-bold text-primary">Data in database </h6>
                 <div class="dropdown no-arrow">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,12 +71,12 @@
             </div>
             <!-- Card Body -->
             <div class="card-body">
-            <h2>Daftar Nama Tabel</h2>
+            <h2>Table List</h2>
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Nama Tabel</th>
-                    <th class="text-right">Aksi</th>
+                    <th>Table Name</th>
+                    <th class="text-right">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -85,12 +85,11 @@
                     <td>{{ $table->{'Tables_in_' . $database} }}</td>
                     <td class="text-right">
                     <a href="/admin/view/{{ $table->{'Tables_in_' . $database} }}" class="btn btn-primary">View</a>
-                    <form action="#" method="POST" style="display: inline;">
+                    <form action="{{ route('table.delete', ['tableName' => $table->{'Tables_in_' . $database}]) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus tabel ini?')">Delete</button>
                     </form>
-                    </td>
                 </tr>
                 @endforeach
                 </tbody>

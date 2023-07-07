@@ -16,6 +16,8 @@ use DataTables;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Illuminate\Support\Facades\Storage;
+
 
 class ExcelController extends Controller
 {
@@ -91,64 +93,68 @@ class ExcelController extends Controller
 
 
     public function exportExcel($tableName, Request $request)
-    {
-        // Periksa apakah tabel ada dalam database
-        if (!Schema::hasTable($tableName)) {
-            // Tampilkan pesan bahwa tabel tidak ada
-            $errorMessage = "Tabel $tableName tidak ditemukan.";
-            return redirect()->back()->with('error', $errorMessage);
-        }
+        {
+    // Periksa apakah tabel ada dalam database
+    if (!Schema::hasTable($tableName)) {
+        // Tampilkan pesan bahwa tabel tidak ada
+        $errorMessage = "Tabel $tableName tidak ditemukan.";
+        return redirect()->back()->with('error', $errorMessage);
+    }
 
-        // Dapatkan daftar kolom dari tabel
-        $columns = Schema::getColumnListing($tableName);
+    // Dapatkan daftar kolom dari tabel
+    $columns = Schema::getColumnListing($tableName);
 
-        // Buat objek Spreadsheet baru
-        $spreadsheet = new Spreadsheet();
+    // Buat objek Spreadsheet baru
+    $spreadsheet = new Spreadsheet();
 
-        // Set pengaturan awal untuk lembar kerja
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle($tableName);
+    // Set pengaturan awal untuk lembar kerja
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle($tableName);
 
-        // Tambahkan header kolom
+    // Tambahkan header kolom
+    $columnIndex = 1;
+    foreach ($columns as $column) {
+        $sheet->setCellValueByColumnAndRow($columnIndex, 1, $column);
+        $columnIndex++;
+    }
+
+    // Ambil data berdasarkan kata kunci pencarian dan kolom yang dipilih
+    $searchKeyword = $request->input('keyword');
+    $selectedColumn = $request->input('column');
+
+    $query = DB::table($tableName);
+
+    if (!empty($searchKeyword) && !empty($selectedColumn)) {
+        $query->where($selectedColumn, 'LIKE', '%' . $searchKeyword . '%');
+    }
+
+    $tableData = $query->get();
+
+    // Tambahkan data baris
+    $rowIndex = 2;
+    foreach ($tableData as $row) {
         $columnIndex = 1;
         foreach ($columns as $column) {
-            $sheet->setCellValueByColumnAndRow($columnIndex, 1, $column);
+            $sheet->setCellValueByColumnAndRow($columnIndex, $rowIndex, $row->$column);
             $columnIndex++;
         }
-
-        // Ambil data berdasarkan kata kunci pencarian dan kolom yang dipilih
-        $searchKeyword = $request->input('keyword');
-        $selectedColumn = $request->input('column');
-
-        $query = DB::table($tableName);
-
-        if (!empty($searchKeyword) && !empty($selectedColumn)) {
-            $query->where($selectedColumn, 'LIKE', '%' . $searchKeyword . '%');
-        }
-
-        $tableData = $query->get();
-
-        // Tambahkan data baris
-        $rowIndex = 2;
-        foreach ($tableData as $row) {
-            $columnIndex = 1;
-            foreach ($columns as $column) {
-                $sheet->setCellValueByColumnAndRow($columnIndex, $rowIndex, $row->$column);
-                $columnIndex++;
-            }
-            $rowIndex++;
-        }
-
-        // Konfigurasi file Excel
-        $filename = $tableName . '_' . date('YmdHis') . '.xlsx';
-        $filepath = 'D:\Folder Kuliah\Semester 6\KPPM\\' . $filename;
-
-        // Simpan file Excel
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filepath);
-
-        // Mengirim file sebagai respons
-        return response()->download($filepath, $filename)->deleteFileAfterSend();
+        $rowIndex++;
     }
+
+    // Simpan file Excel secara dinamis
+    $temporaryFilePath = tempnam(sys_get_temp_dir(), 'export');
+    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $writer->save($temporaryFilePath);
+
+    // Mengatur nama file
+    $filename = $tableName . '_' . date('YmdHis') . '.xlsx';
+
+    // Menyimpan file dengan mengatur header Content-Disposition
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    readfile($temporaryFilePath);
+    unlink($temporaryFilePath); // Menghapus file setelah dikirim
+
+    exit; // Menghentikan eksekusi skrip setelah mengirim file
+}
 
 }

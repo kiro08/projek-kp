@@ -30,4 +30,12 @@ class usercontroller extends Controller
         
         return response()->json(['message' => 'error']);
     }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
 }

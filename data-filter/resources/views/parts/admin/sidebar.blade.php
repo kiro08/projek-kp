@@ -20,7 +20,7 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/admin/index">
                     <i class="fas fa-file-excel"></i>
-                    <span>Input Data</span></a>
+                    <span>Upload Data</span></a>
             </li>
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">

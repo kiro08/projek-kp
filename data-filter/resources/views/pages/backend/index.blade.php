@@ -4,7 +4,7 @@
 <div class="container-fluid">
   <div class="card shadow mb-4">
         <div class="container mt-5">
-        <h2>Unggah File Excel</h2>
+        <h2>Upload File Excel</h2>
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -20,10 +20,10 @@
                 @enderror
             </div>
             <div class="mb-3">
-                <label for="table_name" class="form-label">Nama Tabel</label>
+                <label for="table_name" class="form-label">Tabel Name</label>
                 <input type="text" class="form-control" id="table_name" name="table_name" required>
             </div>
-            <button type="submit" class="btn btn-primary">Unggah</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
     <br>
     </div>

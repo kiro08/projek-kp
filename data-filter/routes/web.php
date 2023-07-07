@@ -17,7 +17,7 @@ use App\Http\Controllers\AdminController;
 
 Route::get('/', [usercontroller::class, 'open'])->name('open');
 Route::post('/ceklogin', [usercontroller::class, 'ceklogin'])->name('ceklogin');
-
+Route::get('/logout', [usercontroller::class, 'logout'])->name('logout');
 //Excel Controller
 Route::post('/Excel/store', [ExcelController::class, 'store'])->name('store');
 Route::get('/admin/export/{tableName}', [ExcelController::class, 'exportExcel'])->name('export');
@@ -29,4 +29,5 @@ Route::get('/admin/index', [AdminController::class, 'index'])->name('index');
 Route::put('/admin/view/{tablename}', [AdminController::class, 'update'])->name('update');
 Route::post('/admin/search/{tablename}', [AdminController::class, 'search'])->name('search');
 Route::get('/admin/search/{tableName}', [AdminController::class, 'search'])->name('search');
+Route::delete('/admin/delete/{tableName}', [AdminController::class, 'delete'])->name('table.delete');
 

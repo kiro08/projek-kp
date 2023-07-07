@@ -44,16 +44,17 @@ class AdminController extends Controller
             $searchKeyword = $request->input('changeInput');
             $newValue = $request->input('newValueInput');
             
-            // Mengganti nilai pada kolom yang dipilih yang mengandung kata-kata tertentu
+            // Mengganti nilai pada kolom yang dipilih yang mengandung kata-kata tertentu (tanpa memperhatikan perbedaan huruf besar/kecil)
             DB::table($tableName)
-                ->where($columnName, 'LIKE', "%{$searchKeyword}%")
-                ->update([$columnName => DB::raw("REPLACE($columnName, '{$searchKeyword}', '{$newValue}')")]);
+                ->whereRaw("LOWER($columnName) LIKE LOWER(?)", ["%{$searchKeyword}%"])
+                ->update([$columnName => DB::raw("REPLACE(LOWER($columnName), LOWER('{$searchKeyword}'), '{$newValue}')")]);
         
             return redirect()->back()->with('success', 'Kolom berhasil diubah dan nilai diperbarui.');
         }
         
         // ...
     }
+
 
     public function view($tableName, Request $request)
     {
@@ -119,6 +120,21 @@ class AdminController extends Controller
         $isEmpty = $tableData->isEmpty();
 
         return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns'));
+    }
+
+
+    public function delete(Request $request, $tableName)
+    {
+        // Periksa apakah tabel ada dalam database
+        if (!Schema::hasTable($tableName)) {
+            $errorMessage = "Tabel $tableName tidak ditemukan.";
+            return redirect()->back()->with('error', $errorMessage);
+        }
+
+        // Hapus tabel dari database
+        Schema::dropIfExists($tableName);
+
+        return redirect()->back()->with('success', 'Tabel berhasil dihapus.');
     }
 
 }
