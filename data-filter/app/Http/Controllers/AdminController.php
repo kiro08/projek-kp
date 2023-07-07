@@ -56,35 +56,44 @@ class AdminController extends Controller
     }
 
 
-    public function view($tableName, Request $request)
-    {
-        $database = env('DB_DATABASE', 'bri');
+public function view($tableName, Request $request)
+{
+    $database = env('DB_DATABASE', 'bri');
 
-        // Periksa apakah tabel ada dalam database
-        if (!Schema::hasTable($tableName)) {
-            // Tampilkan pesan bahwa tabel tidak ada
-            $errorMessage = "Tabel $tableName tidak ditemukan.";
-            return redirect()->back()->with('error', $errorMessage);
-        }
-
-        // Dapatkan daftar kolom dari tabel
-        $columns = Schema::getColumnListing($tableName);
-
-        // Ambil data dari tabel berdasarkan keyword pencarian
-        $query = DB::table($tableName);
-
-        $keyword = $request->input('keyword');
-
-        if (!empty($keyword)) {
-            foreach ($columns as $column) {
-                $query->orWhere($column, 'LIKE', '%' . $keyword . '%');
-            }
-        }
-
-        $tableData = $query->paginate(100);
-
-        return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns', 'keyword'));
+    // Periksa apakah tabel ada dalam database
+    if (!Schema::hasTable($tableName)) {
+        // Tampilkan pesan bahwa tabel tidak ada
+        $errorMessage = "Tabel $tableName tidak ditemukan.";
+        return redirect()->back()->with('error', $errorMessage);
     }
+
+    // Dapatkan daftar kolom dari tabel
+    $columns = Schema::getColumnListing($tableName);
+
+    // Ambil data dari tabel dengan paginasi
+    $perPage = 10000; // Jumlah data per halaman
+    $tableData = DB::table($tableName)->paginate($perPage);
+
+    // Filtering data berdasarkan keyword pencarian
+    $keyword = $request->input('keyword');
+
+    if (!empty($keyword)) {
+        $tableData = $tableData->filter(function ($row) use ($columns, $keyword) {
+            foreach ($columns as $column) {
+                $cellValue = $row->$column;
+                if (strpos(strtolower($cellValue), strtolower($keyword)) !== false) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    return view('pages.backend.view', compact('tableName', 'tableData', 'database', 'columns', 'keyword'));
+}
+
+
+
 
     public function search(Request $request, $tableName)
     {
@@ -136,5 +145,31 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Tabel berhasil dihapus.');
     }
+
+    public function filterDataFromTable(Request $request)
+    {
+        $tableName = $request->input('table_name');
+
+        // Periksa apakah tabel ada dalam database
+        if (!Schema::hasTable($tableName)) {
+            $errorMessage = "Tabel $tableName tidak ditemukan.";
+            return redirect()->back()->with('error', $errorMessage);
+        }
+
+        // Dapatkan daftar kolom dari tabel
+        $columns = Schema::getColumnListing($tableName);
+
+        // Ambil data dari tabel
+        $tableData = DB::table($tableName)->get();
+
+        // Dapatkan daftar nama unik di setiap kolom
+        $columnData = [];
+        foreach ($columns as $column) {
+            $columnData[$column] = DB::table($tableName)->distinct()->pluck($column);
+        }
+
+        return view('pages.backend.filtered_data', compact('tableName', 'tableData', 'columns', 'columnData'));
+    }
+
 
 }

@@ -72,7 +72,24 @@
                             @if (!$tableData->isEmpty() && isset($tableData[0]))
                                 <tr>
                                     @foreach($tableData[0] as $column => $value)
-                                        <th>{{ $column }}</th>
+                                        <th>
+                                            {{ $column }}
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{$column}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Filter
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenu{{$column}}">
+                                                    @php
+                                                        $uniqueValues = $tableData->pluck($column)->unique();
+                                                        $valueCounts = $tableData->countBy($column);
+                                                    @endphp
+                                                    <a class="dropdown-item" href="#" onclick="filterByColumn('{{ $column }}', '')">Semua ({{ $tableData->count() }})</a>
+                                                    @foreach ($uniqueValues as $value)
+                                                        <a class="dropdown-item" href="#" onclick="filterByColumn('{{ $column }}', '{{ $value }}')">{{ $value }} ({{ $valueCounts[$value] }})</a>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </th>
                                     @endforeach
                                 </tr>
                             @endif
@@ -95,42 +112,61 @@
                                 @endforeach
                             @endif
                         </tbody>
-
                         <!--Table body-->
-                    </table><br>
+                    </table>
+                    <br>
                     <!--Table-->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            {{-- Tombol Previous --}}
-                            @if ($tableData->onFirstPage())
-                                <li class="page-item disabled">
-                                    <span class="page-link" aria-hidden="true">&lt;</span>
-                                </li>
-                            @else
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $tableData->previousPageUrl() }}" aria-label="Previous">&lt;</a>
-                                </li>
-                            @endif
+               <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {{-- Tombol Previous --}}
+            @if ($tableData->currentPage() === 1)
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">&lt;</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $tableData->url($tableData->currentPage() - 1) }}" aria-label="Previous">&lt;</a>
+                </li>
+            @endif
 
-                            {{-- Angka halaman --}}
-                            @for ($i = max(1, $tableData->currentPage() - 2); $i <= min($tableData->lastPage(), $tableData->currentPage() + 2); $i++)
-                                <li class="page-item {{ ($i === $tableData->currentPage()) ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $tableData->url($i) }}">{{ $i }}</a>
-                                </li>
-                            @endfor
+            {{-- Tombol Next --}}
+            @if ($tableData->hasMorePages())
+                <li class="page-item">
+                    <a class="page-link" href="{{ $tableData->nextPageUrl() }}" aria-label="Next">&gt;</a>
+                </li>
+            @else
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">&gt;</span>
+                </li>
+            @endif
+        </ul>
+    </nav>
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {{-- Tombol Previous --}}
+        @if ($tableData->isEmpty() || $tableData->currentPage() === 1)
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&lt;</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $tableData->previousPageUrl() }}" aria-label="Previous">&lt;</a>
+            </li>
+        @endif
 
-                            {{-- Tombol Next --}}
-                            @if ($tableData->hasMorePages())
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $tableData->nextPageUrl() }}" aria-label="Next">&gt;</a>
-                                </li>
-                            @else
-                                <li class="page-item disabled">
-                                    <span class="page-link" aria-hidden="true">&gt;</span>
-                                </li>
-                            @endif
-                        </ul>
-                    </nav>
+        {{-- Tombol Next --}}
+        @if ($tableData->isEmpty() || $tableData->count() < $tableData->perPage())
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&gt;</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $tableData->nextPageUrl() }}" aria-label="Next">&gt;</a>
+            </li>
+        @endif
+    </ul>
+</nav>
+
                 </div>
             </section>
             <section>
@@ -179,6 +215,22 @@
                     function exportData() {
                         // Redirect ke URL eksport dengan query parameter
                         window.location.href = "/export?tableName=" + encodeURIComponent("{{ $tableName }}");
+                    }
+                     var originalTableData = @json($tableData);
+                    function filterByColumn(column, value) {
+                            $('table tbody tr').show(); // Tampilkan semua baris tabel
+                            if (value !== '') {
+                                $('table tbody tr').each(function() {
+                                    var cellValue = $(this).find('td:eq(' + $('table thead th').index($('table thead th:contains(' + column + ')')) + ')').text();
+                                    if (cellValue !== value) {
+                                        $(this).hide(); // Sembunyikan baris jika nilainya tidak sesuai
+                                    }
+                                });
+                            }
+                        }
+
+                    function resetFilters() {
+                        $('table tbody tr').show(); // Tampilkan semua baris tabel
                     }
                 </script>
 
